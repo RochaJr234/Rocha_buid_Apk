@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1220">
+<meta name="description" content="Construtor de projetos web e Android da Rocha Digital.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/icon-192.svg" type="image/svg+xml">
+<title>Rocha Digital App Builder</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><div class="brand-mark">RD</div><div><strong>Rocha Digital</strong><small>App Builder · MVP 0.1</small></div></div>
+  <button id="installBtn" class="button ghost hidden">Instalar</button>
+  <button id="menuBtn" class="icon-button" aria-label="Menu">☰</button>
+</header>
+<div class="app-shell">
+  <aside id="sidebar" class="sidebar">
+    <button class="nav-item active" data-view="workspace">▦ <span>Projetos</span></button>
+    <button class="nav-item" data-view="manifest">◇ <span>Manifest & permissões</span></button>
+    <button class="nav-item" data-view="dependencies">⌘ <span>Dependências</span></button>
+    <button class="nav-item" data-view="build">▶ <span>Compilação</span></button>
+    <div class="sidebar-note"><b>Modo MVP</b><p>Gerencia arquivos e valida configurações. Ainda não compila APK nativamente.</p></div>
+  </aside>
+  <main class="main">
+    <section id="view-workspace" class="view">
+      <div class="page-heading"><div><p class="eyebrow">AMBIENTE DE DESENVOLVIMENTO</p><h1>Meus projetos</h1><p class="muted">Crie, edite, organize e exporte os arquivos do seu projeto.</p></div><button id="newProjectBtn" class="button primary">＋ Novo projeto</button></div>
+      <div id="projectSummary" class="summary-grid"></div>
+      <div class="panel project-panel">
+        <div class="panel-heading"><h2>Projeto atual</h2><div class="heading-actions"><button id="importFilesBtn" class="button secondary">Importar arquivos</button><button id="exportZipBtn" class="button secondary">Exportar ZIP</button></div></div>
+        <div class="project-meta">
+          <label>Nome do projeto<input id="projectName" value="Meu Projeto Android" maxlength="80"></label>
+          <label>Tipo de projeto<select id="projectType"><option value="web">Aplicativo web / PWA</option><option value="android">Android nativo (fonte)</option></select></label>
+          <label>Identificador do pacote<input id="packageName" value="br.com.rochadigital.meuprojeto" spellcheck="false"></label>
+        </div>
+        <div class="file-layout">
+          <div class="file-list-wrap"><div class="file-list-title"><b>Arquivos</b><button id="newFileBtn" class="text-button">＋ Arquivo</button></div><div id="fileList" class="file-list"></div><label class="button upload-button">＋ Importar arquivo(s)<input id="fileInput" type="file" multiple hidden></label></div>
+          <div class="editor-wrap"><div class="editor-toolbar"><span id="editorFilename">Selecione um arquivo</span><div><button id="saveFileBtn" class="button secondary small">Salvar</button><button id="deleteFileBtn" class="button danger-outline small">Excluir</button></div></div><textarea id="codeEditor" spellcheck="false" placeholder="Selecione ou crie um arquivo de texto para editar."></textarea><div id="editorStatus" class="editor-status">Arquivos ficam salvos neste navegador neste dispositivo.</div></div>
+        </div>
+      </div>
+      <div class="notice info"><b>Sobre compilação local</b><p>Um PWA comum não pode executar Gradle, acessar livremente o sistema de arquivos ou instalar o Android SDK. Esta versão organiza o código e exporta um ZIP; gerar APK exige um ambiente Android/Gradle compatível ou um serviço de compilação externo.</p></div>
+    </section>
+    <section id="view-manifest" class="view hidden">
+      <div class="page-heading"><div><p class="eyebrow">CONFIGURAÇÃO ANDROID</p><h1>Manifest & permissões</h1><p class="muted">Edite os metadados e valide o XML básico do AndroidManifest.</p></div></div>
+      <div class="panel">
+        <div class="form-grid">
+          <label>Nome do aplicativo<input id="appLabel" value="Meu Aplicativo"></label>
+          <label>Pacote Android<input id="manifestPackage" value="br.com.rochadigital.meuapp"></label>
+          <label>Versão<input id="versionName" value="1.0.0"></label>
+          <label>SDK mínimo<input id="minSdk" type="number" min="21" max="35" value="26"></label>
+          <label>SDK alvo<input id="targetSdk" type="number" min="23" max="36" value="35"></label>
+        </div>
+        <h2>Permissões comuns</h2><p class="muted small-text">Marcar uma permissão apenas registra a intenção no XML. O app ainda precisa implementar o recurso e, quando necessário, pedir autorização ao usuário em tempo de execução.</p>
+        <div id="permissionList" class="permission-grid"></div>
+        <div class="editor-toolbar manifest-toolbar"><b>AndroidManifest.xml</b><div><button id="generateManifestBtn" class="button secondary small">Gerar XML</button><button id="validateManifestBtn" class="button primary small">Validar XML</button></div></div>
+        <textarea id="manifestEditor" class="manifest-editor" spellcheck="false"></textarea>
+        <div id="manifestValidation" class="validation">Gere ou cole um Manifest para validar.</div>
+        <button id="saveManifestBtn" class="button secondary">Salvar Manifest no projeto</button>
+      </div>
+      <div class="notice warning"><b>Importante</b><p>Este validador verifica estrutura básica e nomes de elementos, não substitui a validação do Android Gradle Plugin, do SDK ou das políticas do Android. Serviços de telefonia, como filtragem de chamadas, exigem implementação nativa e permissões/roles apropriadas.</p></div>
+    </section>
+    <section id="view-dependencies" class="view hidden">
+      <div class="page-heading"><div><p class="eyebrow">BUILD CONFIGURATION</p><h1>Dependências</h1><p class="muted">Registre bibliotecas Gradle no projeto-fonte.</p></div></div>
+      <div class="panel">
+        <div class="form-grid">
+          <label>Coordenada Gradle<input id="dependencyInput" placeholder="ex.: androidx.core:core-ktx:1.15.0"></label>
+          <label>Tipo<select id="dependencyScope"><option value="implementation">implementation</option><option value="api">api</option><option value="kapt">kapt</option><option value="testImplementation">testImplementation</option><option value="androidTestImplementation">androidTestImplementation</option></select></label>
+        </div>
+        <button id="addDependencyBtn" class="button primary">＋ Adicionar dependência</button>
+        <div id="dependencyList" class="dependency-list"></div>
+        <div class="notice info"><b>O que isso faz?</b><p>As dependências são armazenadas como metadados e podem ser exportadas para o arquivo de configuração. Não são baixadas nem compiladas nesta versão.</p></div>
+      </div>
+    </section>
+    <section id="view-build" class="view hidden">
+      <div class="page-heading"><div><p class="eyebrow">PACOTE DE SAÍDA</p><h1>Compilação</h1><p class="muted">Confira o que o MVP consegue gerar hoje.</p></div></div>
+      <div class="panel build-status"><div class="status-icon">ZIP</div><div><h2>Exportação de projeto disponível</h2><p>Você pode baixar os arquivos do projeto em um arquivo ZIP sem compactação. Isso não é um APK instalável.</p></div></div>
+      <div class="capability-list">
+        <div><span class="check">✓</span><div><b>Gerenciar arquivos de projeto</b><p>Criar, importar, editar, salvar e excluir arquivos de texto.</p></div><span class="pill done">Disponível</span></div>
+        <div><span class="check">✓</span><div><b>Gerar e validar Manifest básico</b><p>Validação estrutural simples no navegador.</p></div><span class="pill done">Disponível</span></div>
+        <div><span class="check">✓</span><div><b>Exportar arquivos em ZIP</b><p>Empacotamento local sem compressão, feito em JavaScript.</p></div><span class="pill done">Disponível</span></div>
+        <div><span class="pending">…</span><div><b>Compilar APK com Gradle/SDK</b><p>Exige ambiente de compilação que execute ferramentas nativas.</p></div><span class="pill planned">Não implementado</span></div>
+        <div><span class="pending">…</span><div><b>Assinatura de APK de release</b><p>Exige keystore e pipeline de build seguro.</p></div><span class="pill planned">Não implementado</span></div>
+      </div>
+      <button id="buildExportBtn" class="button primary">Exportar projeto ZIP</button>
+    </section>
+  </main>
+</div>
+<div id="toast" role="status" class="toast"></div>
+<dialog id="newProjectDialog" class="modal"><form method="dialog" id="newProjectForm"><div class="modal-head"><h2>Novo projeto</h2><button class="icon-button" value="cancel" aria-label="Fechar">×</button></div><label>Nome<input id="newName" required maxlength="80" value="Novo Projeto"></label><label>Tipo<select id="newType"><option value="web">Aplicativo web / PWA</option><option value="android">Android nativo (fonte)</option></select></label><div class="modal-actions"><button class="button secondary" value="cancel">Cancelar</button><button id="createProjectBtn" class="button primary" value="default">Criar projeto</button></div></form></dialog>
+<script src="app.js"></script>
+</body></html>
